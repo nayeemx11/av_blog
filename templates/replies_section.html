@@ -1,0 +1,29 @@
+{% if parent_reply.child_replies.exists %}
+<ul>
+    {% for reply in parent_reply.child_replies.all %}
+    <li>
+        <p>
+            {% if reply.parent_reply %}
+                @{{ reply.parent_reply.author.username }}
+            {% else %}
+                @{{ comment.author.username }}
+            {% endif %}
+            {{ reply.content }} - {{ reply.author }}
+        </p>
+
+        <!-- Include the form to reply to this reply -->
+        <h5>Reply to this reply:</h5>
+        <form method="post" action="{% url 'post_detail_view' post.id %}">
+            {% csrf_token %}
+            {{ reply_form.content.label_tag }}
+            {{ reply_form.content }}
+            <input type="hidden" name="parent_id" value="{{ reply.id }}"> <br>
+            <button type="submit">Post Reply</button> 
+        </form>
+
+        <!-- Recursively include child replies -->
+        {% include "replies_section.html" with parent_reply=reply reply_form=reply_form %}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}

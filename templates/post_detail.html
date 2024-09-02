@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h2>{{ post.title }}</h2>
+    <p>{{ post.body }}</p>
+
+    {% if user.is_authenticated %}
+
+        {% if comments %}
+            <h3>Comments section</h3>
+            <ul>
+                {% for comment in comments %}
+                <li>
+                    <p>{{ comment.content }} - {{ comment.author }}</p>
+                    <ul>
+                        {% if comment.replies.exists %}
+                        {% for reply in comment.replies.all %}
+                            <li>
+
+                                <p>
+                                    {% if reply.parent_reply %}
+                                        @{{ reply.parent_reply.author.username }}
+                                    {% else %}
+                                        @{{ comment.author.username }}
+                                    {% endif %}
+                                    {{ reply.content }} - {{ reply.author }}
+                                </p>
+                                
+                                <h5>Reply to this reply:</h5>
+                                <form method="post" action="{% url 'post_detail_view' post.id %}">
+                                    {% csrf_token %}
+                                    {{ reply_form.content.label_tag }}
+                                    {{ reply_form.content }}
+                                    <input type="hidden" name="parent_id" value="{{ reply.id }}"> <br>
+                                    <button type="submit">Post Reply</button>
+                                </form>
+                                
+                                {% include "replies_section.html" with parent_reply=reply reply_form=reply_form %}
+
+                            </li>
+                            
+                            {% endfor %}
+
+                        {% endif %}
+                    </ul>
+
+
+                    <h5>Reply to this comment:</h5>
+                    <form method="post" action="{% url 'post_detail_view' post.id %}">
+                        {% csrf_token %}
+                        {{ reply_form.content.label_tag }}
+                        {{ reply_form.content }}
+                        <input type="hidden" name="parent_id" value="{{ comment.id }}"> <br>
+                        <button type="submit">Post Reply</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <h5>Leave a comment on this post:</h5>
+        <form method="post" action="{% url 'post_detail_view' post.id %}">
+            {% csrf_token %}
+            {{ comment_form.content.label_tag }}
+            {{ comment_form.content }}
+            <button type="submit">Post Comment</button>
+        </form>
+    {% else %}
+        <p>Please log in to see this Comment section.</p>
+    {% endif %}
+
+{% endblock %}
+

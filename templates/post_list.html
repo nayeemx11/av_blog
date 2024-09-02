@@ -1,0 +1,21 @@
+{% extends 'base.html' %} 
+
+{% block content %} 
+
+    {% for post in post_list %}
+        <h2>{{ post.title }}</h2>
+        <a href="{% url 'post_detail_view' post.id %}">see more</a>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+        <h5>Create a new post:</h5>
+        <form method="post" action="{% url 'post_list' %}">
+            {% csrf_token %}
+            {{ post_form.as_p }}
+            <button type="submit">Post</button> 
+        </form>
+    {% else %}
+        <p>Please log in to create post.</p>
+    {% endif %}
+
+{% endblock %}
