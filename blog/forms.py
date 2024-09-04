@@ -2,6 +2,18 @@ from django import forms
 from .models import Post, Comments, Replies
 
 class PostForm(forms.ModelForm):
+    
+    """
+    A form for creating or editing a blog post.
+
+    Linked Model:
+    - Post: Represents a blog post.
+
+    Fields:
+    - title: The title of the post.
+    - body: The main content of the post.
+    """
+    
     class Meta:
         model = Post
         fields = ['title', 'body']
@@ -15,6 +27,17 @@ class PostForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
+    
+    """
+    A form for creating a comment on a post.
+
+    Linked Model:
+    - Comments: Represents a comment on a blog post.
+
+    Fields:
+    - content: The text content of the comment.
+    """
+    
     class Meta:
         model = Comments
         fields = ['content']
@@ -27,6 +50,17 @@ class CommentForm(forms.ModelForm):
         }
 
 class ReplyForm(forms.ModelForm):
+    
+    """
+    A form for creating a reply to a comment or another reply.
+
+    Linked Model:
+    - Replies: Represents a reply to a comment or another reply.
+
+    Fields:
+    - content: The text content of the reply.
+    """
+    
     class Meta:
         model = Replies
         fields = ['content']

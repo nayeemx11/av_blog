@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     
 ]
 
+# in this list adding all the external created apps
 EXTERNAL_APPS = [
     'blog',
     'user_auth',
@@ -132,6 +133,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = 'post_list'
-
-LOGOUT_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'index' # after logout the user redirect to

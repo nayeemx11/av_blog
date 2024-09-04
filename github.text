@@ -1,7 +1,7 @@
 echo "# av_blog" >> README.md
 git init
 git add -A
-git commit -m "first commit"
+git commit -m "third commit, with some docSting, and comment"
 git branch -M main
 git remote add origin https://github.com/nayeemx11/av_blog.git
 git push -u origin main

@@ -18,6 +18,7 @@
                         {% for reply in comment.replies.all %}
                             <li>
 
+                                <!-- If it is a reply to reply it will show parent reply username otherwise it will show the comment username -->
                                 <p>
                                     {% if reply.parent_reply %}
                                         @{{ reply.parent_reply.author.username }}
