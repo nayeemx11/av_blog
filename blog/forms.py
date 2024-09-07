@@ -12,11 +12,12 @@ class PostForm(forms.ModelForm):
     Fields:
     - title: The title of the post.
     - body: The main content of the post.
+    - image: The image of that corresponding post
     """
     
     class Meta:
         model = Post
-        fields = ['title', 'body']
+        fields = ['title', 'body', 'image']
         widgets = {
             'content': forms.Textarea(attrs={
                 'rows': 4,

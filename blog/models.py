@@ -15,6 +15,7 @@ class Post(models.Model):
     - created: The timestamp when the post was created (datetime).
     - updated: The timestamp when the post was last updated (datetime).
     - status: The publication status of the post (choice field with 'draft' or 'published').
+    - image: An optional image for the post (ImageField).
     """
     
     STATUS_CHOICES = (
@@ -29,6 +30,7 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='draft')
+    image = models.ImageField(upload_to='posts_images/', null=True, blank=True)
 
     def __str__(self):
         return self.title

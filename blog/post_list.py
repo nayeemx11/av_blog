@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from .models import Post
 from .forms import PostForm
@@ -5,55 +6,53 @@ from .forms import PostForm
 def post_list(request):
     
     """
-    View function to display a list of posts and handle the creation of new posts.
+    View to display a list of posts and handle post creation, including search functionality.
 
-    Models Used:
-    - Post: Represents a blog post. This model is used to retrieve and display all posts,
-      as well as to create new posts when the form is submitted.
+    Models:
+    - Post: Represents a blog post. Used to retrieve and display all posts, as well as create new ones.
 
-    Form Used:
-    - PostForm: A form linked to the Post model. This form is used to handle user input
-      for creating new posts. It includes fields for the post's title and body.
+    Forms:
+    - PostForm: A form tied to the Post model, allowing users to submit a new post.
 
-    Working Process:
-    1. Retrieve all Post objects from the database using the Post model and display them in a list.
-       This is done by querying the Post model with `Post.objects.all()` and storing the result in `post_list`.
-       
-    2. Initialize a PostForm instance to provide an empty form for creating new posts.
-       If the request method is GET, the form will be blank. This form is passed to the template for rendering.
-       
-    3. If the form is submitted via a POST request, it is re-initialized with the data from the request.
-       The form is then validated to ensure the data conforms to the model’s requirements.
-       
-    4. Upon successful validation, a new Post instance is created from the form data. However, the instance is not
-       immediately saved to the database (`commit=False`) to allow for additional modifications—specifically, associating
-       the post with the current user (`post.author = request.user`).
-       
-    5. The new post is saved to the database, and the user is redirected back to the post list view to see the updated list.
-       
-    6. The context dictionary, which includes `post_list` (the list of all posts) and `post_form` (the form for creating a new post),
-       is passed to the `post_list.html` template for rendering.
+    Process:
+    1. Retrieves all posts from the database using `Post.objects.all()` and displays them in the post list.
+    2. Displays a search box that allows users to filter posts by title via a case-insensitive search using the `icontains` lookup.
+       If a search query is provided in the GET request (`?q=`), the post list is filtered by that query; otherwise, all posts are shown.
+    3. Displays a `PostForm` for users to submit new posts. 
+       - If the request method is GET, an empty form is passed to the template.
+       - If the method is POST, the form is initialized with the submitted data and files (for handling media uploads).
+    4. Upon valid form submission, a new post is created but not immediately saved to allow for associating the post with the current user.
+    5. The post is saved to the database, and the user is redirected to the post list view, now updated with the new post.
 
     Context:
-    - post_list: A queryset containing all Post objects to be displayed.
-    - post_form: An instance of PostForm, either blank or bound with POST data.
+    - post_list: QuerySet of Post objects, filtered based on the search query if provided.
+    - post_form: Instance of PostForm, either blank for GET requests or bound with POST data.
 
     Template:
-    - post_list.html: The template used to render the post list and the form.
+    - post_list.html: Template used to display the post list and the form for creating a new post.
 
     Args:
-    - request: The HTTP request object.
+    - request (HttpRequest): The incoming request object, containing GET or POST data.
 
     Returns:
-    - HttpResponse: The rendered post list page with the form, or a redirect to the same page after form submission.
+    - HttpResponse: Rendered post list page, or a redirect back to the post list after successful form submission.
     """
+
     
     post_list = Post.objects.all()
     post_form = PostForm()
+    
+    query = request.GET.get('q')
+    if query:
+        # Search for posts whose title contains the query (case-insensitive)
+        post_list = Post.objects.filter(Q(title__icontains=query))
+    else:
+        # If no query, show all posts
+        post_list = Post.objects.all()
 
     if request.method == "POST":
-        post_form = PostForm(request.POST)
-        if post_form.is_valid():
+         post_form = PostForm(request.POST, request.FILES)  # request.FILES uploads the files to form
+         if post_form.is_valid():
             post = post_form.save(commit=False)
             post.author = request.user
             post.save()

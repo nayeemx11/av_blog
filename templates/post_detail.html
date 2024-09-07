@@ -4,6 +4,12 @@
 
     <h2>{{ post.title }}</h2>
     <p>{{ post.body }}</p>
+    
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" width="200" height="200">
+    {% else %}
+        <p>No image available for this post.</p>
+    {% endif %}
 
     {% if user.is_authenticated %}
 
